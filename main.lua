@@ -1,10 +1,18 @@
 -- bootstrap the compiler
-fennel = require("lib.fennel")
+-- Use LuaRocks load path
+local lfs = require("love.filesystem")
+local requirePath = lfs.getRequirePath() ..
+   ";.luarocks/share/lua/5.1/?.lua" ..
+   ";.luarocks/share/lua/5.1/?/init.lua"
+lfs.setRequirePath(requirePath)
+
+fennel = require("fennel")
 table.insert(package.loaders, fennel.make_searcher({correlate=true}))
 
-fennel.path = love.filesystem.getSource() .. "/?.fnl;" ..
-   love.filesystem.getSource() .. "/src/?.fnl;" ..
-   love.filesystem.getSource() .. "/src/?/init.fnl;" ..
+
+fennel.path = lfs.getSource() .. "/?.fnl;" ..
+   lfs.getSource() .. "/src/?.fnl;" ..
+   lfs.getSource() .. "/src/?/init.fnl;" ..
    fennel.path
 
 debug_mode = true
@@ -22,15 +30,16 @@ db = function(x)
 end
 
 
+
 js = (require "lib.js")
 lume = require("lib.lume")
 
 local make_love_searcher = function(env)
    return function(module_name)
       local path = module_name:gsub("%.", "/") .. ".fnl"
-      if love.filesystem.getInfo(path) then
+      if lfs.getInfo(path) then
          return function(...)
-            local code = love.filesystem.read(path)
+            local code = lfs.read(path)
             return fennel.eval(code, {env=env}, ...)
          end, path
       end
