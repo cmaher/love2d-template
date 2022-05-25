@@ -23,17 +23,23 @@ OUT_LIBS := $(patsubst %.fnl,%.lua,$(LIBS_FNL))
 FENNEL := ./.luarocks/bin/fennel
 LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
-run: $(OUT) $(OUT_ENTS); love .
+run: $(OUT) $(OUT_ENTS)
+	love .
 
-count: ; cloc src/*.fnl --force-lang=clojure
+count:
+	cloc src/*.fnl --force-lang=clojure
 
-clean: ; rm -rf releases/* $(OUT) $(OUT_LIBS)
+clean:
+	rm -rf releases/* $(OUT) $(OUT_LIBS)
 
-cleansrc: ; rm -rf $(OUT) $(OUT_LIBS)
+cleansrc:
+	rm -rf $(OUT) $(OUT_LIBS)
 
-%.lua: src/%.fnl; $(FENNEL) --compile --correlate $< > $@
+%.lua: src/%.fnl
+	$(FENNEL) --compile --correlate $< > $@
 
-lib/%.lua: lib/%.fnl; $(FENNEL) --compile --correlate $< > $@
+lib/%.lua: lib/%.fnl
+	$(FENNEL) --compile --correlate $< > $@
 
 LOVEFILE=releases/$(NAME)-$(VERSION).love
 
