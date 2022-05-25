@@ -16,30 +16,42 @@ TEXT_COLOUR="250,248,240"
 LIBS_LUA := $(wildcard lib/*)
 LIBS_FNL := $(wildcard lib/*.fnl)
 LUA := $(wildcard *.lua)
-SRC := $(wildcard src/*.fnl)
-OUT := $(patsubst src/%.fnl,%.lua,$(SRC))
-OUT_LIBS := $(patsubst %.fnl,%.lua,$(LIBS_FNL))
+SRC :=  $(wildcard src/*.fnl) $(wildcard src/**/*.fnl)
+OUT := $(patsubst src/%.fnl,build/%.lua,$(SRC))
+OUT_LIBS := $(patsubst %.fnl,build/%.lua,$(LIBS_FNL))
 
 FENNEL := ./.luarocks/bin/fennel
 LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
-run: $(OUT) $(OUT_ENTS); love .
+run: build
+	love build
 
-count: ; cloc src/*.fnl --force-lang=clojure
+build: $(OUT) $(OUT_LIBS) $(OUT_ENTS)
+	cp main.lua conf.lua build
+	mkdir -p build/lib
+	ln -s $(PWD)/assets build/assets
+	ln -s $(PWD)/.luarocks build/.luarocks
+	cp lib/*.lua build/lib
 
-clean: ; rm -rf releases/* $(OUT) $(OUT_LIBS)
+count:
+	cloc src/*.fnl --force-lang=clojure
 
-cleansrc: ; rm -rf $(OUT) $(OUT_LIBS)
+clean:
+	rm -rf releases build
 
-%.lua: src/%.fnl; $(FENNEL) --compile --correlate $< > $@
+build/%.lua: src/%.fnl
+	@mkdir -p $(dir $@)
+	@$(FENNEL) --compile --correlate $< > $@
 
-lib/%.lua: lib/%.fnl; $(FENNEL) --compile --correlate $< > $@
+build/lib/%.lua: lib/%.fnl
+	mkdir -p $(dir $@)
+	$(FENNEL) --compile --correlate $< > $@
 
-LOVEFILE=releases/$(NAME)-$(VERSION).love
+LOVEFILE=$(PWD)/releases/$(NAME)-$(VERSION).love
 
-$(LOVEFILE): $(LUA) $(OUT) $(OUT_LIBS) $(LIBS_LUA) assets #text
+$(LOVEFILE): build
 	mkdir -p releases/
-	find $^ -type f | LC_ALL=C sort | env TZ=UTC zip -r -q -9 -X $@ -@
+	cd build && find -L . -type f | LC_ALL=C sort | env TZ=UTC zip -r -q -9 -X $@ -@
 
 love: $(LOVEFILE)
 
@@ -50,7 +62,7 @@ FLAGS=-a "$(AUTHOR)" --description $(DESCRIPTION) \
 	--love $(LOVE_VERSION) --url $(URL) --version $(VERSION) --lovefile $(LOVEFILE)
 
 releases/$(NAME)-$(VERSION)-x86_64.AppImage: $(LOVEFILE)
-	cd buildtools/appimage && ./build.sh $(LOVE_VERSION) $(PWD)/$(LOVEFILE)
+	cd buildtools/appimage && ./build.sh $(LOVE_VERSION) $(LOVEFILE)
 	mv buildtools/appimage/game-x86_64.AppImage $@
 
 releases/$(NAME)-$(VERSION)-macos.zip: $(LOVEFILE)
@@ -94,9 +106,9 @@ uploadsource: releases/$(NAME)-$(VERSION)-source.zip
 	butler push $^ $(ITCH_ACCOUNT)/$(NAME):source --userversion $(VERSION)
 
 
-upload: uploadlinux uploadmac uploadwindows uploadweb uploadlove cleansrc
+upload: uploadlinux uploadmac uploadwindows uploadweb uploadlove
 
-release: linux web mac windows upload cleansrc
+release: linux web mac windows upload
 
 pin-deps:
 	$(LUAROCKS) list --porcelain > .luarocks.lock
