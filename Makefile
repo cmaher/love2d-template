@@ -118,3 +118,4 @@ pin-deps:
 deps:
 	LUAROCKS="$(LUAROCKS)" ./buildtools/deps.sh
 
+assets:
