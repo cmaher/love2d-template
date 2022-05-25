@@ -16,15 +16,20 @@ TEXT_COLOUR="250,248,240"
 LIBS_LUA := $(wildcard lib/*)
 LIBS_FNL := $(wildcard lib/*.fnl)
 LUA := $(wildcard *.lua)
-SRC := $(wildcard src/*.fnl)
-OUT := $(patsubst src/%.fnl,%.lua,$(SRC))
-OUT_LIBS := $(patsubst %.fnl,%.lua,$(LIBS_FNL))
+SRC := $(wildcard src/**/*.fnl)
+OUT := $(patsubst src/%.fnl,build/%.lua,$(SRC))
+OUT_LIBS := $(patsubst %.fnl,build/%.lua,$(LIBS_FNL))
 
 FENNEL := ./.luarocks/bin/fennel
 LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
-run: $(OUT) $(OUT_ENTS)
-	love .
+run: $(OUT) $(OUT_LIBS) $(OUT_ENTS)
+	@cp main.lua conf.lua build
+	@mkdir -p build/.luarocks
+	@mkdir -p build/lib
+	@cp lib/*.lua build/lib
+	@cp -r .luarocks/share build/.luarocks/share
+	@love build
 
 count:
 	cloc src/*.fnl --force-lang=clojure
@@ -33,12 +38,15 @@ clean:
 	rm -rf releases/* $(OUT) $(OUT_LIBS)
 
 cleansrc:
+	rm -rf build
 	rm -rf $(OUT) $(OUT_LIBS)
 
-%.lua: src/%.fnl
-	$(FENNEL) --compile --correlate $< > $@
+build/%.lua: src/%.fnl
+	@mkdir -p $(dir $@)
+	@$(FENNEL) --compile --correlate $< > $@
 
-lib/%.lua: lib/%.fnl
+build/lib/%.lua: lib/%.fnl
+	mkdir -p $(dir $@)
 	$(FENNEL) --compile --correlate $< > $@
 
 LOVEFILE=releases/$(NAME)-$(VERSION).love
