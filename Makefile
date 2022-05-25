@@ -1,7 +1,7 @@
 VERSION=0.1.0
 LOVE_VERSION=11.4
 #WIP name
-NAME=golden-god
+NAME=TODO
 ITCH_ACCOUNT=mahercbeaucoup
 URL=https://mahercbeaucoup.itch.io/golden-god
 AUTHOR="Christian Maher"
@@ -19,6 +19,8 @@ LUA := $(wildcard *.lua)
 SRC := $(wildcard src/*.fnl)
 OUT := $(patsubst src/%.fnl,%.lua,$(SRC))
 OUT_LIBS := $(patsubst %.fnl,%.lua,$(LIBS_FNL))
+
+LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
 run: $(OUT) $(OUT_ENTS); love .
 
@@ -62,7 +64,7 @@ releases/$(NAME)-$(VERSION)-win.zip: $(LOVEFILE)
 releases/$(NAME)-$(VERSION)-web.zip: $(LOVEFILE)
 	buildtools/love-js/love-js.sh releases/$(NAME)-$(VERSION).love $(NAME) -v=$(VERSION) -a=$(AUTHOR) -o=releases -x=$(WIDTH) -y=$(HEIGHT) -c=$(CANVAS_COLOUR) -t=$(TEXT_COLOUR)
 
-releases/$(NAME)-$(VERSION)-source.zip: 
+releases/$(NAME)-$(VERSION)-source.zip:
 	find assets buildtools lib ./conf.lua ./makefile ./license.txt ./main.lua ./readme.org src buildtools -type f | LC_ALL=C sort | env TZ=UTC zip -r -q -9 -X $@ -@
 
 runweb: $(LOVEFILE)
@@ -94,3 +96,10 @@ uploadsource: releases/$(NAME)-$(VERSION)-source.zip
 upload: uploadlinux uploadmac uploadwindows uploadweb uploadlove cleansrc
 
 release: linux web mac windows upload cleansrc
+
+pin-deps:
+	$(LUAROCKS) list --porcelain > .luarocks.lock
+
+deps:
+	LUAROCKS="$(LUAROCKS)" ./buildtools/deps.sh
+

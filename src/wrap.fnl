@@ -1,5 +1,5 @@
-(local gamestate (require :lib.gamestate))
-(local stdio (require :lib.stdio))
+(local gamestate (require :hump.gamestate))
+(local stdio (require :stdio))
 
 (fn love.load [args]
   (love.graphics.setDefaultFilter "nearest" "nearest" 0)
