@@ -3,9 +3,7 @@
 local lfs = require("love.filesystem")
 local requirePath = lfs.getRequirePath() ..
    ";.luarocks/share/lua/5.1/?.lua" ..
-   ";.luarocks/share/lua/5.1/?/init.lua" ..
-	";.lib/?.lua" ..
-   ";.lib/?/init.lua"
+   ";.luarocks/share/lua/5.1/?/init.lua"
 lfs.setRequirePath(requirePath)
 
 lume = require("lume")
