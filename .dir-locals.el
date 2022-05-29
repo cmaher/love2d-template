@@ -3,4 +3,4 @@
 
 ((fennel-mode .
    ((eval . (setq-local inferior-lisp-program
-                        (concat "love " (locate-dominating-file default-directory dir-locals-file) "/build"))))))
+                        (concat "love " (locate-dominating-file default-directory dir-locals-file)))))))

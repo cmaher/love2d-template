@@ -20,7 +20,14 @@ fennel.path =
    lfs.getSource() .. "/lib/?/init.fnl;" ..
    fennel.path
 
+fennel["macro-path"] = fennel["macro-path"] ..
+   lfs.getSource() .. "/macros/?.fnl" ..
+	lfs.getSource() .. "/macros/?/init.fnl"
+
 debug_mode = true
+if debug_mode then
+   debug.traceback = fennel.traceback
+end
 pp = function(x) print(fennel.view(x)) end
 db = function(x)
    if (debug_mode == true) then

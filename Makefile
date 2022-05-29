@@ -13,14 +13,14 @@ CANVAS_COLOUR="26,16,16"
 TEXT_COLOUR="250,248,240"
 
 
-LIBS_LUA := $(wildcard lib/*)
-LIBS_FNL := $(wildcard lib/*.fnl)
+LIBS_LUA := $(wildcard lib/*) $(wildcard/lib/**/*.lua)
+LIBS_FNL := $(wildcard lib/*.fnl) $(wildcard/lib/**/*.fnl)
 LUA := $(wildcard *.lua)
 SRC :=  $(wildcard src/*.fnl) $(wildcard src/**/*.fnl)
 OUT := $(patsubst src/%.fnl,build/%.lua,$(SRC))
 OUT_LIBS := $(patsubst %.fnl,build/%.lua,$(LIBS_FNL))
 
-FENNEL := ./.luarocks/bin/fennel
+FENNEL := ./.luarocks/bin/fennel --add-macro-path ./macros/?.fnl --add-macro-path ./macros/?/init.fnl
 LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
 run: build

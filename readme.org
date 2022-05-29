@@ -38,7 +38,7 @@ Once you install the latest version of [[https://gitlab.com/technomancy/fennel-m
 
 This build uses =gamestate= rather than Phil's approach to scene seperation and puts all your =.fnl= files into a =/src= directory. It also provides a seperate makefile that handles this layout.
 
-Note, any macros will have to be placed in the root of the project or in the =lib= folder (this can be modified in =main.lua=)
+Note, any macros will have to be placed in the root of the project, inthe =lib= folder, or in the =macros= folder (this can be modified in =main.lua= and the =FENNEL= var in the =Makefile=)
 
 Presently the only layouts are =clone= and =seperate-source=. If you want to make your own check out the =.duplicate= directory to see how they work.
 
@@ -71,4 +71,4 @@ If you design your game as a series of states in a very simple state machine, fo
 
 * License
 
-GPLv3 - This applies to the template, including the framing code. It does not apply to whatever you make with the template (except the included frame code).
+GPLv3 - This applies to the template. It does not apply to whatever you make with the template (except the included  code).
