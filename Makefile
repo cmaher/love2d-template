@@ -1,11 +1,10 @@
 VERSION=0.1.0
 LOVE_VERSION=11.4
-#WIP name
-NAME=TODO
-ITCH_ACCOUNT=mahercbeaucoup
-URL=https://mahercbeaucoup.itch.io/golden-god
-AUTHOR="Christian Maher"
-DESCRIPTION="TODO"
+NAME=TODO_TITLE
+ITCH_ACCOUNT=TODO_ITCH_ACCOUNT
+URL=TODO_URL
+AUTHOR=TODO_AUTHOR_NAME
+DESCRIPTION=TODO_DESCRIPTION
 
 HEIGHT=640
 WIDTH=880
@@ -23,8 +22,8 @@ OUT_LIBS := $(patsubst %.fnl,build/%.lua,$(LIBS_FNL))
 FENNEL := ./.luarocks/bin/fennel --add-macro-path ./macros/?.fnl --add-macro-path ./macros/?/init.fnl
 LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
-run: build
-	love build
+run:
+	love .
 
 build: $(OUT) $(OUT_LIBS) $(OUT_ENTS)
 	cp main.lua conf.lua build

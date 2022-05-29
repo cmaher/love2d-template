@@ -6,30 +6,7 @@ Check out the makefile and conf.lua files in =$PROJECT_NAME=, updating them with
 
 You can enter =love .= in the =$PROJECT_NAME= directory to run your game, or =make run=.
 
-The following lines with =Update= should be changed in the =makefile= and =love.conf= to reflect your game.
-
-#+BEGIN_SRC makefile
-VERSION=0.1.0
-LOVE_VERSION=11.4
-NAME=change-me # Update
-ITCH_ACCOUNT=change-me-too # Update
-URL=https://gitlab.com/alexjgriffith/min-love2d-fennel # Update
-AUTHOR="Your Name" # Update
-DESCRIPTION="Minimal setup for trying out Phil Hagelberg's fennel/love game design process." # Update
-#+END_SRC
-
-#+BEGIN_SRC lua
-love.conf = function(t)
-   t.gammacorrect = true
-   t.title, t.identity = "change-me", "Minimal" -- Update
-   t.modules.joystick = false
-   t.modules.physics = false
-   t.window.width = 720
-   t.window.height = 450
-   t.window.vsync = false
-   t.version = "11.4"
-end
-#+END_SRC
+Replace all =TODO= entries in =Makefile= and =conf.lua=
 
 * Emacs Setup
 
