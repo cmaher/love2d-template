@@ -27,6 +27,7 @@ run:
 
 build: $(OUT) $(OUT_LIBS) $(OUT_ENTS)
 	cp main.lua conf.lua build
+	rm -f build/assets build/.luarocks
 	ln -sf $(PWD)/assets build/assets
 	ln -sf $(PWD)/.luarocks build/.luarocks
 	mkdir -p build/lib
