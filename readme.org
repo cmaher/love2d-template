@@ -6,7 +6,11 @@ Check out the makefile and conf.lua files in =$PROJECT_NAME=, updating them with
 
 You can enter =love .= in the =$PROJECT_NAME= directory to run your game, or =make run=.
 
-Replace all =TODO= entries in =Makefile= and =conf.lua=
+* Using
+
+1. =git clone --depth=1 https://github.com/cmaher/love2d-template.git PROJECT_NAME=
+2. =rm -rf .git && git init=
+3. Replace all =TODO= entries in =Makefile= and =conf.lua=
 
 * Emacs Setup
 
