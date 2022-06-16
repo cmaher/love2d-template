@@ -1,3 +1,7 @@
+***
+This license applies to the following paths:
+* buildtools/
+***
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 

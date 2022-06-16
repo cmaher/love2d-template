@@ -1,3 +1,7 @@
+# parallel build
+NPROCS = $(shell grep -c 'processor' /proc/cpuinfo)
+MAKEFLAGS += -j$(NPROCS)
+
 VERSION=0.1.0
 LOVE_VERSION=11.4
 NAME=TODO_TITLE
@@ -11,27 +15,38 @@ WIDTH=880
 CANVAS_COLOUR="26,16,16"
 TEXT_COLOUR="250,248,240"
 
-
-LIBS_LUA := $(wildcard lib/*) $(wildcard/lib/**/*.lua)
-LIBS_FNL := $(wildcard lib/*.fnl) $(wildcard/lib/**/*.fnl)
+LIBS_LUA := $(shell find lib -name '*.lua')
+LIBS_FNL := $(shell find lib -name '*.fnl')
 LUA := $(wildcard *.lua)
-SRC :=  $(wildcard src/*.fnl) $(wildcard src/**/*.fnl)
+SRC :=  $(shell find src -name '*.fnl')
 OUT := $(patsubst src/%.fnl,build/%.lua,$(SRC))
 OUT_LIBS := $(patsubst %.fnl,build/%.lua,$(LIBS_FNL))
 
-FENNEL := ./.luarocks/bin/fennel --add-macro-path ./macros/?.fnl --add-macro-path ./macros/?/init.fnl
+FENNEL := ./.luarocks/bin/fennel\
+	--plugin $(PWD)/src/maru/prelude-macros.fnl \
+	--add-macro-path ./macros/?.fnl\
+	--add-macro-path ./macros/?/init.fnl
 LUAROCKS := luarocks --lua-version=5.1 --lua-dir=${LUA_DIR} --tree=./.luarocks
 
 run:
-	love .
+	love . --debug --fennel --repl
 
-build: $(OUT) $(OUT_LIBS) $(OUT_ENTS)
+.PHONY: test
+test:
+	love . --debug --fennel --test
+
+build: compile
 	cp main.lua conf.lua build
-	rm -f build/assets build/.luarocks
-	ln -sf $(PWD)/assets build/assets
-	ln -sf $(PWD)/.luarocks build/.luarocks
-	mkdir -p build/lib
-	cp lib/*.lua build/lib
+	rm -rf build/assets build/.luarocks
+	ln -s $(PWD)/assets build/assets
+	ln -s $(PWD)/.luarocks build/.luarocks
+	cp -R $(PWD)/lib/* build/lib
+
+# call this instead of clean build because of parallel processing
+rebuild: clean
+	$(MAKE) build
+
+compile: $(OUT) $(OUT_LIBS) $(OUT_ENTS)
 
 count:
 	cloc src/*.fnl --force-lang=clojure
@@ -40,8 +55,8 @@ clean:
 	rm -rf releases build
 
 build/%.lua: src/%.fnl
-	@mkdir -p $(dir $@)
-	@$(FENNEL) --compile --correlate $< > $@
+	mkdir -p $(dir $@)
+	$(FENNEL) --compile --correlate $< > $@
 
 build/lib/%.lua: lib/%.fnl
 	mkdir -p $(dir $@)
@@ -49,8 +64,10 @@ build/lib/%.lua: lib/%.fnl
 
 LOVEFILE=$(PWD)/releases/$(NAME)-$(VERSION).love
 
+# removes GPLv3 code before packaging for release
 $(LOVEFILE): build
 	mkdir -p releases/
+	rm -f build/lib/stdio.fnl build/lib/stdio.lua
 	cd build && find -L . -type f | LC_ALL=C sort | env TZ=UTC zip -r -q -9 -X $@ -@
 
 love: $(LOVEFILE)
